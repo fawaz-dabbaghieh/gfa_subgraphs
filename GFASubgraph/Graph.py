@@ -13,13 +13,13 @@ class Graph:
 
     __slots__ = ['nodes', 'b_chains', 'child_parent']
 
-    def __init__(self, graph_file=None, low_memory=False):
+    def __init__(self, graph_file=None):
         if graph_file is not None:
             if not os.path.exists(graph_file):
                 print("graph file {} does not exist".format(graph_file))
                 sys.exit()
             # loading nodes from file
-            self.nodes = read_gfa(gfa_file_path=graph_file, k=1, low_memory=low_memory)
+            self.nodes = read_gfa(gfa_file_path=graph_file)
         else:
             self.nodes = dict()
         # elif graph_file.endswith(".vg"):
@@ -125,4 +125,4 @@ class Graph:
             counter += 1
             logging.info("Writing Component {}...".format(output_file))
 
-            self.write_gfa(set_of_nodes=cc, output_file=output_file, append=False)
+            self.write_graph(set_of_nodes=cc, output_file=output_file, append=False)

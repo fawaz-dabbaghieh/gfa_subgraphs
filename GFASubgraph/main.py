@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import os
 import argparse
 import logging
 from GFASubgraph.bfs import bfs
@@ -90,7 +91,7 @@ def main():
             graph = Graph(graph_file=args.in_graph)
 
             logging.info("Finding Biggest Component...")
-            all_comps = graph.output_components()
+            all_comps = graph.output_components(args.output_dir)
             logging.info("Writing Components...")
             logging.info("Done...")
 
@@ -113,7 +114,7 @@ def main():
                         logging.info("extracting neighborhood around node {}".format(n))
                         set_of_nodes = bfs(graph, n, args.bfs_len)
                         graph.write_graph(set_of_nodes=set_of_nodes,
-                                          output_file=args.output_neighborhood, append=True, modified=False)
+                                          output_file=args.output_neighborhood, append=True)
                         logging.info("finished successfully...")
                 else:
                     print("Error: Check log file")

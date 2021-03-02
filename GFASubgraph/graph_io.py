@@ -95,7 +95,6 @@ def read_gfa(gfa_file_path):
     nodes = dict()
     edges = []
 
-    min_node_length = k
     with open(gfa_file_path, "r") as lines:
         for line in lines:
             if line.startswith("S"):
@@ -109,11 +108,6 @@ def read_gfa(gfa_file_path):
                 if len(line) > 3:
                     nodes[n_id].optional = "\t".join(line[3:])
 
-                if min_node_length > nodes[n_id].seq_len:
-                    logging.error("Node {} has a sequence of length {}"
-                                  " which is smaller than the provided k\n"
-                                  "Not allowed.".format(nodes[n_id].id,
-                                                            nodes[n_id].seq_len))
                     sys.exit()
 
             elif line.startswith("L"):
