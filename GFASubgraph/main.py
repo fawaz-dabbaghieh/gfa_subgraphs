@@ -13,9 +13,6 @@ parser._positionals.title = 'Subcommands'
 parser._optionals.title = 'Global Arguments'
 
 ########################## general commands ###############################
-parser.add_argument("-e", "--examples", dest="examples", action="store_true",
-                    help="prints out example commands to use the tool")
-
 parser.add_argument("-g", "--in_graph", metavar="GRAPH_PATH", dest="in_graph",
                     default=None, type=str, help="graph file path (GFA or VG)")
 
