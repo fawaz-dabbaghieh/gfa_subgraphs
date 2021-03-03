@@ -121,8 +121,9 @@ class Graph:
         connected_comps = all_components(self)
         counter = 1
         for cc in connected_comps:
-            output_file = output_dir + os.path.sep + "component{}.gfa".format(counter)
-            counter += 1
-            logging.info("Writing Component {}...".format(output_file))
+            if len(cc) > 1:
+                output_file = output_dir + os.path.sep + "component{}.gfa".format(counter)
+                counter += 1
+                logging.info("Writing Component {}...".format(output_file))
 
-            self.write_graph(set_of_nodes=cc, output_file=output_file, append=False)
+                self.write_graph(set_of_nodes=cc, output_file=output_file, append=False)
