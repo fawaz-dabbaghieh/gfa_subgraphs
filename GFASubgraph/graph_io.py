@@ -108,8 +108,6 @@ def read_gfa(gfa_file_path):
                 if len(line) > 3:
                     nodes[n_id].optional = "\t".join(line[3:])
 
-                    sys.exit()
-
             elif line.startswith("L"):
                 edges.append(line)
 
