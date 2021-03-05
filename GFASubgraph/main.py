@@ -48,27 +48,15 @@ def main():
         print("You did not provide any arguments\n"
               "Try to use -h or --help for help")
         sys.exit()
-
-    if args.examples:
-        # todo
-        print("Some example for using this tool\n\n"
-              "You have a GFA graph and want to check some bubble statistics:\n"
-              "bubblegun -g some_graph_file.gfa -k 61 > stats.log\n\n"
-              "You want to output the bubble chains of only simple bubbles in a separate file:\n"
-              "bubblegun -g graph_file.gfa -k 31 --bubbles --only_simple -o b_chains.gfa > stats.log\n\n"
-              "You want to output bubble chains with both bubbles and Superbubbles:\n"
-              "bubblegun -g graph_file.gfa -k 41 --bubbles -o b_sb_chains.gfa > stats.log")
-        sys.exit()
+        
 
     if args.subcommands is None:
         print("Please provide a subcommand after the global commands")
         sys.exit(1)
 
     if args.in_graph is None:
-        if args.subcommands != "gamdigest":
-            print("you didn't give an input graph file")
-            parser.print_help()
-            sys.exit(0)
+        print("Please provide an input graph with -g, --in_graph")
+        sys.exit(1)
 
 
     # log_file = "log_" + str(time.clock_gettime(1)).split(".")[0] + ".log"
