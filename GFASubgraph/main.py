@@ -6,6 +6,7 @@ import logging
 from GFASubgraph.bfs import bfs
 from GFASubgraph.Graph import Graph
 
+
 parser = argparse.ArgumentParser(description='Output neighborhood in Graph', add_help=True)
 subparsers = parser.add_subparsers(help='Available subcommands', dest="subcommands")
 
@@ -19,7 +20,6 @@ parser.add_argument("-g", "--in_graph", metavar="GRAPH_PATH", dest="in_graph",
 
 parser.add_argument("--log", dest="log_level", type=str, default="DEBUG",
                     help="The logging level [DEBUG, INFO, WARNING, ERROR, CRITICAL]")
-
 
 ########################## Output components ###############################
 comp_parser = subparsers.add_parser('output_comps', help='Command for outputiing each connected component in a separate GFA file')
@@ -41,6 +41,8 @@ bfs_parser.add_argument("--output_neighborhood", dest="output_neighborhood", met
 
 
 args = parser.parse_args()
+# log_file = "log_" + str(time.clock_gettime(1)).split(".")[0] + ".log"
+log_file = "log.log"
 
 
 def main():
@@ -48,7 +50,6 @@ def main():
         print("You did not provide any arguments\n"
               "Try to use -h or --help for help")
         sys.exit()
-        
 
     if args.subcommands is None:
         print("Please provide a subcommand after the global commands")
@@ -57,10 +58,6 @@ def main():
     if args.in_graph is None:
         print("Please provide an input graph with -g, --in_graph")
         sys.exit(1)
-
-
-    # log_file = "log_" + str(time.clock_gettime(1)).split(".")[0] + ".log"
-    log_file = "log.log"
 
     logging.basicConfig(filename=log_file, filemode='w',
                         format='[%(asctime)s] %(message)s',
@@ -93,7 +90,6 @@ def main():
 
                     logging.info("Reading Graph...")
                     graph = Graph(args.in_graph)
-
 
                     for n in args.starting_nodes:
                         logging.info("extracting neighborhood around node {}".format(n))

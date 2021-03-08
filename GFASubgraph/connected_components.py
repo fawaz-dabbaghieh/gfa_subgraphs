@@ -35,12 +35,13 @@ def find_component(graph, start_node):
 
     return cc
 
+
 def all_components(graph):
     """
     find all connected components in the graph
 
     :params graph: is a graph object from class Graph
-    :return: list of list of components
+    :return: list of set of components
     """
     connected_comp = []
     # visited = set()

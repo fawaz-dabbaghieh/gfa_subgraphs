@@ -78,45 +78,4 @@ def bfs(graph, start_node, size):
 
     neighborhood = neighborhood.union(main_while_loop(graph, start_node, queue, 1, visited, len_second_direction))
 
-    # while (len(neighborhood) <= len_first_direction) and len(queue) > 0:
-    #     start = queue.popleft()
-    #
-    #     if start not in neighborhood:
-    #         neighborhood.add(start)
-    #
-    #     visited.add(start)
-    #
-    #     if start == start_node:
-    #         neighbors = first_direction
-    #     else:
-    #         neighbors = graph.nodes[start].neighbors()
-    #
-    #     for n in neighbors:
-    #         if n not in visited:
-    #             queue.append(n)
-    #
-    # queue = deque()
-    # queue.append(start_node)
-    # # in case on direction had only a few nodes then
-    # # then I explore more than half of the size in the other direction
-    # if len(neighborhood) < int(size/2):
-    #     len_second_direction += size - int(size/2)
-    #
-    # while (len(neighborhood) <= len_second_direction) and len(queue) > 0:
-    #     start = queue.popleft()
-    #
-    #     if start not in neighborhood:
-    #         neighborhood.add(start)
-    #
-    #     visited.add(start)
-    #
-    #     if start == start_node:
-    #         neighbors = first_direction
-    #     else:
-    #         neighbors = graph.nodes[start].neighbors()
-    #
-    #     for n in neighbors:
-    #         if n not in visited:
-    #             queue.append(n)
-
     return neighborhood
