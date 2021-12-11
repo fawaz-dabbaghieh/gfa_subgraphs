@@ -13,7 +13,7 @@ if CURRENT_PYTHON < REQUIRED_PYTHON:
     sys.exit(1)
 
 setup(name='GFASubgraph',
-      version='1.0.0',
+      version='1.1.0',
       description='Separates a neighborhood around a node in the graph as a subgraph',
       author='Fawaz Dabbaghie',
       author_email='fawaz@hhu.de',

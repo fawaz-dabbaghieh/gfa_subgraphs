@@ -2,7 +2,7 @@
 A tool that can separate a neighborhood with user defined size around a node or nodes in the graph, and output it into a new GFA file for better debugging, visualization and analysis.
 This tool can also separate connected components to separate GFA files.
 
-##Installation:
+## Installation:
 To install for user only
 ```
 python setup.py install --user
@@ -10,7 +10,7 @@ python setup.py install --user
 
 Or if you have root access then without `--user`
 
-##Usage:
+## Usage:
 ```
 $ GFASubgraph -h
 
@@ -44,6 +44,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --start START_NODES [START_NODES ...]
                         Give the starting node(s) for neighborhood extraction
+  --cores CORES         number of threads
   --neighborhood_size SIZE
                         With -s --start option, size of neighborhood to extract
   --output_neighborhood OUTPUT
@@ -52,15 +53,21 @@ optional arguments:
 ```
 
 ### Connected Components subcommand
-Takes an output directory path and it will output separate GFA files named as `component{1,2,3...}.gfa`
+This subcommand outputs the connected components as separate files, user can choose the `n` largest components in terms of node size.
+If the `-n, --n-components` was left empty, then all components are outputted to the chosen directory, they are named in this fashion `component{1,2,3...}.gfa`
+
+The argument `--seq-size` is a true or false argument, when given, then the components are sorted based on their seq size and not number of nodes.
 
 ```
 $ GFASubgraph output_comps -h
-usage: GFASubgraph output_comps [-h] [--output_dir OUTPUT_DIR]
+usage: GFASubgraph output_comps [-h] [--output_dir OUTPUT_DIR] [-n N_COMPS]
 
 optional arguments:
   -h, --help            show this help message and exit
   --output_dir OUTPUT_DIR
                         Output neighborhood file
+  -n N_COMPS, --n-components N_COMPS
+                        If you want to output the n largest components in node size. Default: all
+  --seq-size            If this argument given, then the components are sorted based on the seq size
 
 ```

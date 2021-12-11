@@ -1,6 +1,6 @@
 import os
 import sys
-from .Node import Node
+from GFASubgraph.Node import Node
 import logging
 
 
@@ -28,10 +28,9 @@ def write_gfa(graph, set_of_nodes=None,
         if os.path.exists(output_file):
             f = open(output_file, "a")
         else:
-            logging.warning("Trying to append to a non-existant file\n"
+            logging.warning("Trying to append to a non-existent file\n"
                             "creating an output file")
             f = open(output_file, "w+")
-
     for n1 in set_of_nodes:
         if n1 not in nodes:
             logging.warning("Node {} does not exist in the graph, skipped in output".format(n1))

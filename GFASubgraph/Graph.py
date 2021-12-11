@@ -1,6 +1,6 @@
-from .graph_io import read_gfa, write_gfa
-from .connected_components import all_components
-from .bfs import bfs
+from GFASubgraph.graph_io import read_gfa, write_gfa
+from GFASubgraph.connected_components import all_components
+from GFASubgraph.bfs import bfs
 import sys
 import logging
 import os
@@ -98,7 +98,7 @@ class Graph:
         """
         if not output_file.endswith(".gfa"):
             output_file += ".gfa"
-
+        print("I am here")
         write_gfa(self, set_of_nodes=set_of_nodes, output_file=output_file,
                   append=append)
 
