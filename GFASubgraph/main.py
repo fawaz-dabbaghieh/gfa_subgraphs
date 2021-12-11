@@ -10,10 +10,11 @@ from GFASubgraph.Graph import Graph
 from GFASubgraph.connected_components import all_components
 
 
-def bfs_queue(graph, n, length, queue):
-    nodes = bfs(graph, n, length)
-    queue.put(nodes)
+def bfs_queue(graph, n, length, output_neighborhood):
 
+    set_of_nodes = bfs(graph, n, length)
+    graph.write_graph(set_of_nodes=set_of_nodes,
+                      output_file=output_neighborhood, append=True)
 
 def seq_size(graph, nodes):
     counter = 0
@@ -136,11 +137,10 @@ def main():
                     graph = Graph(args.in_graph)
 
                     processes = []
-                    queue = mp.Queue()
                     for n in args.starting_nodes:
 
                         logging.info("extracting neighborhood around node {} and size of {}".format(n, args.bfs_len))
-                        process = mp.Process(target=bfs_queue, args=(graph, n, args.bfs_len, queue, ))
+                        process = mp.Process(target=bfs_queue, args=(graph, n, args.bfs_len, args.output_neighborhood, ))
                         processes.append(process)
 
                         if len(processes) == args.cores:
@@ -148,22 +148,15 @@ def main():
                                 p.start()
                             for p in processes:
                                 p.join()
-                            for p in processes:
-                                set_of_nodes = queue.get()
-                                graph.write_graph(set_of_nodes=set_of_nodes,
-                                                  output_file=args.output_neighborhood, append=True)
+
                             processes = []
-                            queue = mp.Queue()
 
                     # leftovers
                     for p in processes:
                         p.start()
                     for p in processes:
                         p.join()
-                    for p in processes:
-                        set_of_nodes = queue.get()
-                        graph.write_graph(set_of_nodes=set_of_nodes,
-                                          output_file=args.output_neighborhood, append=True)
+
                     logging.info("Done...")
                 else:
                     print("Error: Check log file")
