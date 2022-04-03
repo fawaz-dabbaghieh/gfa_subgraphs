@@ -45,6 +45,13 @@ class Graph:
         return "The graph has {} Nodes and {} chains".format(
             len(self.nodes), len(self.b_chains))
 
+    def __contains__(self, key):
+        """
+        overloading the in operator to check if node exists in graph
+        """
+
+        return key in self.nodes
+
     def reset_visited(self):
         """
         resets all nodes.visited to false
@@ -98,7 +105,7 @@ class Graph:
         """
         if not output_file.endswith(".gfa"):
             output_file += ".gfa"
-        print("I am here")
+        # print("I am here")
         write_gfa(self, set_of_nodes=set_of_nodes, output_file=output_file,
                   append=append)
 

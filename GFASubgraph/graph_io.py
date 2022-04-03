@@ -11,11 +11,8 @@ def write_gfa(graph, set_of_nodes=None,
 
     :param nodes: Dictionary of nodes object.
     :param set_of_nodes: A list of node ids of the path or nodes we want to generate a GFA file for.
-    :param k: overlap between two nodes.
     :param output_file: path to output file
     :param append: if I want to append to a file instead of rewriting it
-    :param modified: To write my modified GFA file format instead of the standard GFA
-    :return: writes a gfa file
     """
     nodes = graph.nodes
 
@@ -37,10 +34,11 @@ def write_gfa(graph, set_of_nodes=None,
             continue
 
         # else:
-        if len(nodes[n1].optional) > 0:
-            line = str("\t".join(("S", str(n1), nodes[n1].seq, nodes[n1].optional)))
+        if nodes[n1].optional:  # if there are extra tags, write them as is
+            line = str("\t".join(["S", str(n1), nodes[n1].seq + nodes[n1].optional]))
+            # line = str("\t".join(("S", str(n1), nodes[n1].seq, nodes[n1].optional)))
         else:
-            line = str("\t".join(("S", str(n1), nodes[n1].seq)))
+            line = str("\t".join(["S", str(n1), nodes[n1].seq]))
 
         f.write(line + "\n")
 
@@ -76,16 +74,11 @@ def write_gfa(graph, set_of_nodes=None,
     f.close()
 
 
-
 def read_gfa(gfa_file_path):
     """
     Read a gfa file
 
     :param gfa_file_path: gfa graph file.
-    :param modified: if I'm reading my modified GFA with extra information for the nodes
-    :param coverage: read the coverage from the graph
-    :param low_memory: don't read the sequences to save memory
-    :return: Dictionary of node ids and Node objects.
     """
     if not os.path.exists(gfa_file_path):
         logging.error("the gfa file path you gave does not exists, please try again!")
@@ -104,6 +97,7 @@ def read_gfa(gfa_file_path):
 
                 nodes[n_id].seq_len = n_len
                 nodes[n_id].seq = str(line[2]).strip()
+                # adding the extra tags if any to the node object
                 if len(line) > 3:
                     nodes[n_id].optional = "\t".join(line[3:])
 
@@ -156,4 +150,3 @@ def read_gfa(gfa_file_path):
                 nodes[neighbor].end.append((k, 1, overlap))
 
     return nodes
-
