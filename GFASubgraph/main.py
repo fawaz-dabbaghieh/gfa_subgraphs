@@ -67,9 +67,9 @@ alignment_subgraph.add_argument("--alignment_list", dest="alignment_list", type=
                                 help="List of sequence names from the GAF file to separate, if not given "
                                      "all alignments in GAF will be considered")
 
-alignment_subgraph.add_argument("--neighborhood_size", dest="bfs_len", metavar="SIZE", default=10,
+alignment_subgraph.add_argument("--neighborhood_size", dest="bfs_len", metavar="SIZE", default=3,
                                 type=int, help="the neighborhood size around each node in the alignment path, "
-                                               "default: 10")
+                                               "default: 3")
 
 alignment_subgraph.add_argument("--prefix", dest="prefix", type=str, default="alignment_subgraph",
                                 help="prefix for the output files")
