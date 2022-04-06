@@ -1,7 +1,10 @@
 # gfa_subgraphs
-A tool that can separate a neighborhood with user defined size around a node or nodes in the graph, and output it into a new GFA file for better debugging, visualization and analysis.
-This tool can also separate connected components to separate GFA files.
+This small tool has 3 functionalities:
+* Separating a neighborhood around 1 or more nodes chosen by the user from a GFA graph into a subgraph
+* Separates different components in the graph based on their sequence size or number of nodes size.
+* Given alignments to the graph, it can separate only these alignments and a neighborhood around them to make visualizing very big graph easier. It also produces Bandage-compatible colors for these alignments.
 
+If you're interested in seeing more functionalitie, please open an issue with the intended input and outputs wanted and I will try my best to implement these improvements asap.
 ## Installation:
 To install for user only
 ```
@@ -77,14 +80,11 @@ optional arguments:
 
 ### Alignments subgraph subcommand
 This subcommand takes an input alignment file to the graph in GAF format `--input_gaf`, and an optional list 
-of alignment names `--alignment_list` as a text file with each name in one line, also takes a neighborhood size as integer. 
+of alignment names `--alignment_list` as a text file with each name in one line, also takes a neighborhood size as integer `--neighborhood_size`. 
 
-The idea here is that it goes through each path for each alignment given, takes each node in that path as a starting node to perform BFS search with 
-a neighborhood size as given and extract the subgraph corresponding to this. So if the neighborhood size is 1, GFASubgraph will only extract the path 
-the alignment took in the graph.
+The idea here is that it goes through each path for each alignment given, takes each node in that path as a starting node to perform BFS search with a neighborhood size as given by the user, and extract the subgraph corresponding to this. So if the neighborhood size is 1, GFASubgraph will only extract the path the alignment took in the graph as a subgraph.
 
-It also produces a CSV file with node IDs of the alignment and each alignment gets a color, so the user can color the graph loaded with `Bandage` by given it
-the CSV file and coloring according to that CSV file
+It also produces a CSV file with node IDs of the alignment and each alignment gets a color randomly, so the user can color the graph loaded with `Bandage` by given it the CSV file and coloring according to that CSV file.
 
 ```
 # GFASubgraph alignment_subgraph -h
