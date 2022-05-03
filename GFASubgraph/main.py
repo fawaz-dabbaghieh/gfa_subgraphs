@@ -282,16 +282,16 @@ def main():
         logging.info(f"Loading edge counts from {args.in_graph}")
         edges = get_edges_counts(args.in_graph)
         logging.info("Checking for low cov edges and their neighborhood")
-        low_counts = []
+        low_cov_edges = []
         for e, c in edges.items():
             if c <= args.edge_cov_cutoff:
-                low_counts.append(e)
-        logging.info(f"There were {len(low_counts)} edges with counts equal or less than threshold of "
+                low_cov_edges.append(e)
+        logging.info(f"There were {len(low_cov_edges)} edges with counts equal or less than threshold of "
                      f"{args.edge_cov_cutoff}")
         # problem_edges are the low cov edges with two difference chromosomes around them
         # the value (tmp) is a dict of chromosomes and list of edges for that chromosome
         problem_edges = dict()
-        for e in edges:
+        for e in low_cov_edges:
             tmp = check_candidate_edges(graph, e, args.bfs_len)
             if tmp:
                 problem_edges[e] = tmp
