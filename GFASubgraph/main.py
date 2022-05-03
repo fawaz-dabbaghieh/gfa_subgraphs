@@ -2,9 +2,10 @@ import argparse
 import random
 import logging
 import pdb
+import pickle
 import multiprocessing as mp
 from GFASubgraph.main_helpers import *
-from GFASubgraph.graph_io import write_gfa
+from GFASubgraph.graph_io import write_gfa, get_edges_counts
 from GFASubgraph.Graph import Graph
 from GFASubgraph.connected_components import all_components
 from GFASubgraph.x11_colors import color_list
@@ -31,7 +32,7 @@ comp_parser = subparsers.add_parser('output_comps',
                                     help='Command for outputting each connected component in a separate GFA file')
 
 comp_parser.add_argument("--output_dir", dest="output_dir", metavar="OUTPUT_DIR",
-                        type=str, default=".", help="Output neighborhood file")
+                         type=str, default=".", help="Output neighborhood file")
 
 comp_parser.add_argument("-n", "--n-components", dest="n_comps", type=int, default=0,
                          help="If you want to output the n largest components in node size. Default: all")
@@ -47,7 +48,7 @@ bfs_parser.add_argument("--start", dest="starting_nodes", metavar="START_NODES",
                         default=None, help="Give the starting node(s) for neighborhood extraction")
 
 bfs_parser.add_argument("--cores", dest="cores", default=1, type=int,
-                    help="number of threads")
+                        help="number of threads")
 
 bfs_parser.add_argument("--neighborhood_size", dest="bfs_len", metavar="SIZE", default=100,
                         type=int, help="With -s --start option, size of neighborhood to extract. Default: 100")
@@ -57,8 +58,8 @@ bfs_parser.add_argument("--output_neighborhood", dest="output_neighborhood", met
 
 
 ########################## Alignment subgraph ###############################
-alignment_subgraph = subparsers.add_parser('alignment_subgraph',
-                                    help='Command for outputting each connected component in a separate GFA file')
+alignment_subgraph = subparsers.add_parser('alignment_subgraph', help='Command for outputting each '
+                                                                      'connected component in a separate GFA file')
 
 alignment_subgraph.add_argument("--input_gaf", dest="input_gaf", metavar="INPUT_GAF",
                                 type=str, default=None, help="The input alignment gaf file")
@@ -73,6 +74,28 @@ alignment_subgraph.add_argument("--neighborhood_size", dest="bfs_len", metavar="
 
 alignment_subgraph.add_argument("--prefix", dest="prefix", type=str, default="alignment_subgraph",
                                 help="prefix for the output files")
+
+
+########################## Remove low coverage edges ###############################
+low_cov_edges = subparsers.add_parser('low_cov_edges',
+                                      help='Command for outputting each connected component in a separate GFA file')
+
+
+low_cov_edges.add_argument("--coverage_cutoff", dest="edge_cov_cutoff", default=1,
+                           type=int, help="the neighborhood size around each node in the alignment path, default: 0")
+
+
+low_cov_edges.add_argument("--neighborhood_size", dest="bfs_len", metavar="SIZE", default=50,
+                           type=int, help="the neighborhood size around low-coverage nodes default: 50")
+
+
+low_cov_edges.add_argument("--nodes_info", dest="nodes_info", type=str,
+                           default=None, help="Two column TSV of node ids and their chromosome")
+
+low_cov_edges.add_argument("--output_edges", dest="out_edges",
+                           type=str, default="problem_edges.pickle",
+                           help="pickled dict with problem edges and the chromosomes around them")
+
 
 args = parser.parse_args()
 
@@ -174,7 +197,6 @@ def main():
 
                             processes = []
                             queue = mp.Queue()
-                            n_sentinals = 0
 
                     # leftovers
                     for p in processes:
@@ -211,12 +233,12 @@ def main():
         else:
             to_extract = []
             with open(args.alignment_list, "r") as infile:
-                for l in infile:
-                    l = l.strip()
-                    if l not in alignments:
-                        logging.warning(f"The alignment {l} in {args.alignment_list} is not present in {args.input_gaf}")
+                for line in infile:
+                    line = line.strip()
+                    if line not in alignments:
+                        logging.warning(f"The alignment {line} in {args.alignment_list} is not present in {args.input_gaf}")
                     else:
-                        to_extract.append(l.strip())
+                        to_extract.append(line.strip())
         final_nodes = set()
 
         # finished preparing and now need to go through each alignment
@@ -225,20 +247,58 @@ def main():
         # also outputting a CSV file with node names and coloring based on each alignment
         logging.info("Extracting the alignments...")
         with open(args.prefix + "colors.csv", "w") as out_csv:
-            out_csv.write("Name,Colour,Alignment Name\n")
+            out_csv.write("Name,Colour,Alignment Name,Alignment length, Alignment ID, Alignment coordinates\n")
 
             for align_name in to_extract:
                 color = random.choice(color_list)
                 logging.info(f"Extracting the alignment {align_name} and will be coloured {color}")
 
-                align_path = alignments[align_name]
+                align_path, align_size, align_ident = alignments[align_name]
                 extract_alignments(align_path, graph, args.bfs_len, final_nodes)  # adds to final_nodes
                 for n in align_path:  # I am only coloring the path
-                    out_csv.write(f"{n},{color},{align_name}\n")
+                    out_csv.write(f"{n},{color},{align_name},{align_size},{align_ident}\n")
 
         out_graph = args.prefix + 'subgraph.gfa'
         logging.info(f"Writing the output graph {out_graph}")
         graph.write_graph(set_of_nodes=final_nodes, output_file=out_graph)
+
+
+############################################## Edge coverage
+
+    if args.subcommands == "low_cov_edges":
+        if not args.nodes_info:
+            error("You need to give the nodes info TSV, first column is node "
+                  "ids and second is chr, no header", args.log_file)
+    # it's a hacky section here but this still under testing, whether I need this feature or not
+        # adding the chromosome to the nodes
+        with open(args.nodes_info, "r") as infile:
+            for line in infile:
+                line = line.strip().split()
+                if line[0] in graph:
+                    graph[line[0]].chromosome = line[1]
+                else:
+                    logging.warning(f"The nodes {line[0]} in the TSV is not present in the graph")
+
+        logging.info(f"Loading edge counts from {args.in_graph}")
+        edges = get_edges_counts(args.in_graph)
+        logging.info("Checking for low cov edges and their neighborhood")
+        low_counts = []
+        for e, c in edges.items():
+            if c <= args.edge_cov_cutoff:
+                low_counts.append(e)
+        logging.info(f"There were {len(low_counts)} edges with counts equal or less than threshold of "
+                     f"{args.edge_cov_cutoff}")
+        # problem_edges are the low cov edges with two difference chromosomes around them
+        # the value (tmp) is a dict of chromosomes and list of edges for that chromosome
+        problem_edges = dict()
+        for e in edges:
+            tmp = check_candidate_edges(graph, e, args.bfs_len)
+            if tmp:
+                problem_edges[e] = tmp
+        logging.info(f"There were {len(problem_edges)} edges with two different chromosomes around them")
+        with open(args.out_edges, "wb") as outfile:
+            logging.info("Pickling the info")
+            pickle.dump(problem_edges, outfile)
 
 
 if __name__ == "__main__":
