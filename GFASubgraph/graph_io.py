@@ -38,7 +38,7 @@ def write_gfa(graph, set_of_nodes=None,
             line = str("\t".join(["S", str(n1), nodes[n1].seq, nodes[n1].optional]))
             # line = str("\t".join(("S", str(n1), nodes[n1].seq, nodes[n1].optional)))
         else:
-            line = str("\t".join(["S", str(n1), nodes[n1].seq]))
+            line = str("\t".join(["S", str(n1), nodes[n1].seq + "\n"]))
 
         f.write(line)
 
