@@ -1,7 +1,5 @@
 import argparse
 import random
-import logging
-import pdb
 import pickle
 import multiprocessing as mp
 from GFASubgraph.main_helpers import *
@@ -47,11 +45,14 @@ bfs_parser = subparsers.add_parser('bfs', help='Command for separating neighborh
 bfs_parser.add_argument("--start", dest="starting_nodes", metavar="START_NODES", type=str, nargs="+",
                         default=None, help="Give the starting node(s) for neighborhood extraction")
 
+bfs_parser.add_argument("--start_list", dest="starting_list", type=str, default=None,
+                        help="a filwith a list of start node, each node id in one line")
+
 bfs_parser.add_argument("--cores", dest="cores", default=1, type=int,
                         help="number of threads")
 
-bfs_parser.add_argument("--neighborhood_size", dest="bfs_len", metavar="SIZE", default=100,
-                        type=int, help="With -s --start option, size of neighborhood to extract. Default: 100")
+bfs_parser.add_argument("--neighborhood_size", dest="bfs_len", metavar="SIZE", default=5,
+                        type=int, help="With -s --start option, size of neighborhood to extract. Default: 5")
 
 bfs_parser.add_argument("--output_neighborhood", dest="output_neighborhood", metavar="OUTPUT",
                         type=str, default=None, help="Output neighborhood file")
@@ -164,63 +165,72 @@ def main():
         if args.cores > os.cpu_count():
             print("Your system only have {} available cores at the moment".format(os.cpu_count()))
             sys.exit()
-
+        start_nodes = set()
         if args.starting_nodes is not None:
             if args.bfs_len is not None:
                 if args.output_neighborhood is not None:
-
-                    # logging.info("Reading Graph...")
-                    # graph = Graph(args.in_graph)
-
-                    processes = []
-                    queue = mp.Queue()
-                    logging.info("Extracting neighborhoods...")
-                    for n in args.starting_nodes:
-
-                        process = mp.Process(target=bfs_queue, args=(graph, n, args.bfs_len, queue, ))
-                        processes.append(process)
-
-                        if len(processes) == args.cores:
-                            for p in processes:
-                                p.start()
-                            n_sentinals = 0
-                            while n_sentinals != len(processes):
-                                nodes = queue.get()
-                                if not nodes:
-                                    n_sentinals += 1
-                                else:
-                                    # write to file
-                                    graph.write_graph(set_of_nodes=nodes,  output_file=args.output_neighborhood,
-                                                      append=True)
-                            for p in processes:
-                                p.join()
-
-                            processes = []
-                            queue = mp.Queue()
-
-                    # leftovers
-                    for p in processes:
-                        p.start()
-                    n_sentinals = 0
-                    while n_sentinals != len(processes):
-                        nodes = queue.get()
-                        if not nodes:
-                            n_sentinals += 1
-                        else:
-                            # write to file
-                            graph.write_graph(set_of_nodes=nodes, output_file=args.output_neighborhood,
-                                              append=True)
-                    for p in processes:
-                        p.join()
-
-                    logging.info("Done...")
+                    start_nodes = set(args.starting_nodes)
                 else:
                     error("You need to give an output file name --output_neighborhood", args.log_file)
             else:
-                error("You did not give the neighborhood size", args.log_file)
+                error("You did not set the neighborhood size", args.log_file)
         else:
-            error("You did not give the starting node(s)", args.log_file)
+            if not os.path.exists(args.starting_list):
+                error(f"the file {args.starting_list} does not exist", args.log_file)
+            else:
+                start_nodes = set()
+                with open(args.starting_list) as infile:
+                    for l in infile:
+                        start_nodes.add(l.strip())
+        # logging.info("Reading Graph...")
+        # graph = Graph(args.in_graph)
+        if os.path.exists(args.output_neighborhood):
+            warning(f"The file {args.output_neighborhood} already exist, the results will "
+                    f"be appended, if you don't want that to happen, give another output file "
+                    f"or remove this current one", args.log_file)
+        processes = []
+        queue = mp.Queue()
+        logging.info("Extracting neighborhoods...")
+        if not start_nodes:
+            error("the list of start nodes is empty, please check your inputs", args.log_file)
+        for n in start_nodes:
+            process = mp.Process(target=bfs_queue, args=(graph, n, args.bfs_len, queue,))
+            processes.append(process)
 
+            if len(processes) == args.cores:
+                for p in processes:
+                    p.start()
+                n_sentinals = 0
+                while n_sentinals != len(processes):
+                    nodes = queue.get()
+                    if not nodes:
+                        n_sentinals += 1
+                    else:
+                        # write to file
+                        graph.write_graph(set_of_nodes=nodes, output_file=args.output_neighborhood,
+                                          append=True)
+                for p in processes:
+                    p.join()
+
+                processes = []
+                queue = mp.Queue()
+
+        # leftovers
+        for p in processes:
+            p.start()
+        n_sentinals = 0
+        while n_sentinals != len(processes):
+            nodes = queue.get()
+            if not nodes:
+                n_sentinals += 1
+            else:
+                # write to file
+                graph.write_graph(set_of_nodes=nodes, output_file=args.output_neighborhood,
+                                  append=True)
+        for p in processes:
+            p.join()
+
+        logging.info("Done...")
 ############################################## Alignment subgraph
 
     if args.subcommands == "alignment_subgraph":

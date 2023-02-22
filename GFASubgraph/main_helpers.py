@@ -26,6 +26,11 @@ def error(msg, logfile):
     sys.exit(1)
 
 
+def warning(msg, logfile):
+    print("there were warnings, please check the log")
+    logging.warning("WARNING " + msg)
+
+
 def read_gaf(in_gaf, log_file):
     if not os.path.exists(in_gaf):
         error(f"The file {in_gaf} does not exist", log_file)
