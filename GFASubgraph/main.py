@@ -162,6 +162,7 @@ def main():
 
     ############################################## BFS
     if args.subcommands == "bfs":
+        output_nodes = set()
         if args.cores > os.cpu_count():
             print("Your system only have {} available cores at the moment".format(os.cpu_count()))
             sys.exit()
@@ -207,8 +208,10 @@ def main():
                         n_sentinals += 1
                     else:
                         # write to file
-                        graph.write_graph(set_of_nodes=nodes, output_file=args.output_neighborhood,
-                                          append=True)
+                        for n in nodes:
+                            output_nodes.add(n)
+                        # graph.write_graph(set_of_nodes=nodes, output_file=args.output_neighborhood,
+                        #                   append=True)
                 for p in processes:
                     p.join()
 
@@ -225,11 +228,15 @@ def main():
                 n_sentinals += 1
             else:
                 # write to file
-                graph.write_graph(set_of_nodes=nodes, output_file=args.output_neighborhood,
-                                  append=True)
+                for n in nodes:
+                    output_nodes.add(n)
+                # graph.write_graph(set_of_nodes=nodes, output_file=args.output_neighborhood,
+                #                   append=True)
         for p in processes:
             p.join()
 
+        logging.info("Writing output file...")
+        graph.write_graph(set_of_nodes=output_nodes, output_file=args.output_neighborhood, append=True)
         logging.info("Done...")
 ############################################## Alignment subgraph
 
