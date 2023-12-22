@@ -1,13 +1,12 @@
 from collections import deque
 
 
-def main_while_loop(graph, start_node, queue, direction, visited, size):
+def main_while_loop(graph, start_node, queue, visited, size):
     neighborhood = {start_node}
     if len(queue) == 0:
         queue.append(start_node)
-    while (len(neighborhood) <= size) and len(queue) > 0:
-        # pdb.set_trace()
 
+    while (len(neighborhood) <= size) and len(queue) > 0:
         start = queue.popleft()
 
         if start not in neighborhood:
@@ -15,13 +14,10 @@ def main_while_loop(graph, start_node, queue, direction, visited, size):
 
         visited.add(start)
 
-        if start == start_node:  # only start node has a direction
-            neighbors = graph.nodes[start_node].children(direction)
-        else:
-            neighbors = graph.nodes[start].neighbors()
+        neighbors = graph.nodes[start].neighbors()
 
         for n in neighbors:
-            if n not in visited and n not in queue:
+            if n not in visited:
                 queue.append(n)
 
     return neighborhood
@@ -48,34 +44,9 @@ def bfs(graph, start_node, size):
     queue.append(start_node)
     visited.add(start_node)
 
-    # looking in direction 0 and 1
-    first_direction = graph.nodes[start_node].children(0)
-    len_first_direction = 0
-    second_direction = graph.nodes[start_node].children(1)
-    len_second_direction = 0
-    # neighbors = graph.nodes[start_node].neighbors()
-
-    if len(first_direction) == 0:
-        if len(second_direction) == 0:
-            # single node and no children in either directions
-            return {start_node}
-        else:
-            len_second_direction = size
-    else:
-        if len(second_direction) == 0:
-            len_first_direction = size
-        else:
-            len_first_direction = int(size/2)
-            len_second_direction = int(size/2)
-
-    # break when the subgraph is longer than the size wanted
-    # or the component the start node in was smaller than the size
-    if len_first_direction != 0:
-        neighborhood = main_while_loop(graph, start_node, queue, 0, visited, len_first_direction)
-    else:
-        neighborhood = set()
-    queue = deque()
-    if len_second_direction != 0:
-        neighborhood = neighborhood.union(main_while_loop(graph, start_node, queue, 1, visited, len_second_direction))
+    neighbors = graph.nodes[start_node].neighbors()
+    if len(neighbors) == 0:
+        return {start_node}
+    neighborhood = main_while_loop(graph, start_node, queue, visited, size)
 
     return neighborhood
