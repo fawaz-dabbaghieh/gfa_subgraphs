@@ -20,7 +20,6 @@ def main_while_loop(graph, start_node, queue, visited, size):
             if n not in visited and n not in queue:
                 queue.append(n)
 
-        print(len(queue), len(visited))
     return neighborhood
 
 
