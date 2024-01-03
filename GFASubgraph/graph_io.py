@@ -35,7 +35,7 @@ def write_gfa(graph, set_of_nodes=None,
 
         # else:
         if nodes[n1].optional:  # if there are extra tags, write them as is
-            line = str("\t".join(["S", str(n1), nodes[n1].seq, nodes[n1].optional]))
+            line = str("\t".join(["S", str(n1), nodes[n1].seq, nodes[n1].optional])) + "\n"
             # line = str("\t".join(("S", str(n1), nodes[n1].seq, nodes[n1].optional)))
         else:
             line = str("\t".join(["S", str(n1), nodes[n1].seq + "\n"]))
@@ -90,7 +90,7 @@ def read_gfa(gfa_file_path):
     with open(gfa_file_path, "r") as lines:
         for line in lines:
             if line.startswith("S"):
-                line = line.split("\t")
+                line = line.strip().split("\t")
                 n_id = str(line[1])
                 n_len = len(line[2])
                 nodes[n_id] = Node(n_id)
