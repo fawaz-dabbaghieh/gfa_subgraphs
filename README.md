@@ -15,25 +15,30 @@ Or if you have root access then without `--user`
 
 ## Usage:
 ```
-usage: GFASubgraph [-h] [-g GRAPH_PATH] [--log_file LOG_FILE] [--log LOG_LEVEL]
-                   {output_comps,bfs,alignment_subgraph} ...
+usage: GFASubgraph [-h] [-g GRAPH_PATH] [--log_file LOG_FILE]
+                   [--log LOG_LEVEL]
+                   {output_comps,bfs,alignment_subgraph,low_cov_edges} ...
 
 Output neighborhood in Graph
 
 Subcommands:
-  {output_comps,bfs,alignment_subgraph}
+  {output_comps,bfs,alignment_subgraph,low_cov_edges}
                         Available subcommands
-    output_comps        Command for outputting each connected component in a separate GFA file
+    output_comps        Command for outputting each connected component in a
+                        separate GFA file
     bfs                 Command for separating neighborhood
-    alignment_subgraph  Command for outputting each connected component in a separate GFA file
+    alignment_subgraph  Command for outputting each connected component in a
+                        separate GFA file
+    low_cov_edges       Command for outputting each connected component in a
+                        separate GFA file
 
 Global Arguments:
   -h, --help            show this help message and exit
   -g GRAPH_PATH, --in_graph GRAPH_PATH
                         graph file path (GFA or VG)
   --log_file LOG_FILE   The name/path of the log file. Default: log.log
-  --log LOG_LEVEL       The logging level [DEBUG, INFO, WARNING, ERROR, CRITICAL]
-
+  --log LOG_LEVEL       The logging level [DEBUG, INFO, WARNING, ERROR,
+                        CRITICAL]
 ```
 
 The tool has one required argument `-g` which is the GFA file path, and two optional arguments, log file name `--log_file`, and 
