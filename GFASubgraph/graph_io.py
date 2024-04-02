@@ -15,7 +15,6 @@ def write_gfa(graph, set_of_nodes=None,
     :param append: if I want to append to a file instead of rewriting it
     """
     nodes = graph.nodes
-
     if set_of_nodes is None:
         set_of_nodes = graph.nodes.keys()
 
@@ -35,12 +34,11 @@ def write_gfa(graph, set_of_nodes=None,
 
         # else:
         if nodes[n1].optional:  # if there are extra tags, write them as is
-            line = str("\t".join(["S", str(n1), nodes[n1].seq, nodes[n1].optional])) + "\n"
-            # line = str("\t".join(("S", str(n1), nodes[n1].seq, nodes[n1].optional)))
+            line = str("\t".join(["S", str(n1), nodes[n1].seq, nodes[n1].optional]))
         else:
-            line = str("\t".join(["S", str(n1), nodes[n1].seq + "\n"]))
+            line = str("\t".join(["S", str(n1), nodes[n1].seq]))
 
-        f.write(line)
+        f.write(line + "\n")
 
         # writing edges
         edges = []
@@ -90,7 +88,7 @@ def read_gfa(gfa_file_path):
     with open(gfa_file_path, "r") as lines:
         for line in lines:
             if line.startswith("S"):
-                line = line.strip().split("\t")
+                line = line.strip().split()
                 n_id = str(line[1])
                 n_len = len(line[2])
                 nodes[n_id] = Node(n_id)

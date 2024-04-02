@@ -57,6 +57,8 @@ bfs_parser.add_argument("--neighborhood_size", dest="bfs_len", metavar="SIZE", d
 bfs_parser.add_argument("--output_neighborhood", dest="output_neighborhood", metavar="OUTPUT",
                         type=str, default=None, help="Output neighborhood file")
 
+bfs_parser.add_argument("--append", dest="append", action="store_true", default=False,
+                         help="If used, then the output graph will be appended to any graph with the same name that exist, otherwise will be created")
 
 ########################## Alignment subgraph ###############################
 alignment_subgraph = subparsers.add_parser('alignment_subgraph', help='Command for outputting each '
@@ -236,7 +238,7 @@ def main():
             p.join()
 
         logging.info("Writing output file...")
-        graph.write_graph(set_of_nodes=output_nodes, output_file=args.output_neighborhood, append=True)
+        graph.write_graph(set_of_nodes=output_nodes, output_file=args.output_neighborhood, append=args.append)
         logging.info("Done...")
 ############################################## Alignment subgraph
 

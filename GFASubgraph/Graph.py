@@ -5,6 +5,7 @@ from GFASubgraph.Node import Node
 import sys
 import logging
 import os
+import pdb
 
 
 class Graph:
