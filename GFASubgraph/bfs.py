@@ -42,7 +42,6 @@ def bfs(graph, start_node, size):
 
     queue.append(start_node)
     visited.add(start_node)
-
     neighbors = graph[start_node].neighbors()
 
     if len(neighbors) == 0:  # no neighbors

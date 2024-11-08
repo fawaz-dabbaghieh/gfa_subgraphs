@@ -15,14 +15,14 @@ class Graph:
 
     __slots__ = ['nodes', 'edge_counts']
 
-    def __init__(self, graph_file=None, edge_count=False):
+    def __init__(self, graph_file=None, edge_count=False, low_mem=False):
         if graph_file is not None:
             if not os.path.exists(graph_file):
                 print("Error! Check log file.")
                 logging.error("graph file {} does not exist".format(graph_file))
                 sys.exit()
             # loading nodes from file
-            self.nodes = read_gfa(gfa_file_path=graph_file)
+            self.nodes = read_gfa(gfa_file_path=graph_file, low_mem=low_mem)
             if edge_count:
                 self.edge_counts = self.get_edges_counts(graph_file)
         else:

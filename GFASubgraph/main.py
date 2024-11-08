@@ -1,6 +1,7 @@
 import argparse
 import random
 import pickle
+import pdb
 import multiprocessing as mp
 from GFASubgraph.main_helpers import *
 from GFASubgraph.graph_io import write_gfa, get_edges_counts
@@ -196,6 +197,8 @@ def main():
         logging.info("Extracting neighborhoods...")
         if not start_nodes:
             error("the list of start nodes is empty, please check your inputs", args.log_file)
+        if len(graph.nodes) == 0:
+            error("The graph is empty for some reason, check your GFA file")
         for n in start_nodes:
             process = mp.Process(target=bfs_queue, args=(graph, n, args.bfs_len, queue,))
             processes.append(process)

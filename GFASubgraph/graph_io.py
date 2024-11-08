@@ -73,7 +73,7 @@ def write_gfa(graph, set_of_nodes=None,
     f.close()
 
 
-def read_gfa(gfa_file_path):
+def read_gfa(gfa_file_path, low_mem=False):
     """
     Read a gfa file
 
@@ -95,7 +95,10 @@ def read_gfa(gfa_file_path):
                 nodes[n_id] = Node(n_id)
 
                 nodes[n_id].seq_len = n_len
-                nodes[n_id].seq = str(line[2]).strip()
+                if not low_mem:
+                    nodes[n_id].seq = str(line[2]).strip()
+                else:
+                    nodes[n_id].seq = "*"
                 # adding the extra tags if any to the node object
                 if len(line) > 3:
                     nodes[n_id].optional = "\t".join(line[3:])
