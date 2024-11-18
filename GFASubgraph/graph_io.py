@@ -113,8 +113,10 @@ def read_gfa(gfa_file_path, low_mem=False):
         k = line[1]
         if k not in nodes:  # if the edge is there but not the node
             continue
-
-        overlap = int(line[5][:-1])
+        if line[5] == "*":
+            overlap = 0
+        else:
+            overlap = int(line[5][:-1])
 
         neighbor = line[3]
         if neighbor not in nodes:
